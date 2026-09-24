@@ -4,17 +4,24 @@ The first executable version of img_gen_01 uses Stable Diffusion v1.5 through Di
 
 ## What happens
 
-1. main.py receives a text prompt.
-2. The generation module starts generation.
-3. The model loader loads Stable Diffusion.
-4. On the first run, model files are downloaded and cached locally.
-5. The model generates an image.
-6. The image is saved under outputs/.
+1. `src/main.py` receives a text prompt and generation settings.
+2. The generation module selects a registered model.
+3. The model loader downloads the model on first use and caches it under the project's `models/` directory.
+4. The local pipeline generates an image.
+5. The image is saved under `outputs/`.
 
 Example:
 
-    python -m src.main "a small robot sitting on a desk"
+    python -m src.main "a small robot sitting on a desk" --model sd15 --steps 30 --width 512 --height 512 --seed 42
 
-The project does not call a paid image-generation API. The first model download requires an internet connection; generation itself is performed by the local Python process.
+## Main controls
+
+- `--model`: registered model name.
+- `--steps`: number of denoising steps.
+- `--width`: output width.
+- `--height`: output height.
+- `--seed`: optional seed for repeatable generation settings.
+
+The project does not call a paid image-generation API. The first model download requires an internet connection; generation is performed by the local Python process.
 
 Stable Diffusion v1.5 is the first learning target, not necessarily the final model choice. Check the model license before distributing a product or generated content.
