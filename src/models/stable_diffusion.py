@@ -2,6 +2,8 @@ from pathlib import Path
 
 import torch
 from diffusers import StableDiffusionPipeline
+from src.generation.latents import create_latents, denoise, decode_latents
+from src.prompt import encode_prompt
 
 
 def choose_device() -> str:
@@ -38,3 +40,33 @@ def load_pipeline(
         )
 
     return pipe.to(device)
+
+
+def manual_generate(
+    pipe: StableDiffusionPipeline,
+    prompt: str,
+    steps: int = 20,
+    seed: int | None = None,
+):
+    """Run a minimal educational text-to-image path using pipeline components."""
+    embeddings = encode_prompt(pipe, prompt).hidden_states
+
+    height = 64
+    width = 64
+    latents = create_latents(
+        height=height,
+        width=width,
+        seed=seed,
+        device=str(pipe.device),
+        dtype=pipe.unet.dtype,
+    )
+
+    latents = denoise(
+        pipe.scheduler,
+        pipe.unet,
+        latents,
+        embeddings,
+        num_inference_steps=steps,
+    )
+
+    return decode_latents(pipe, latents)
