@@ -49,6 +49,14 @@ def predict_noise(pipe, latents, timestep, text_embeddings):
         ).sample
 
 
+def scheduler_step(scheduler, noise_prediction, timestep, latents):
+    """Apply one scheduler update using the UNet noise prediction."""
+    scheduler.set_timesteps(scheduler.config.num_train_timesteps, device=latents.device)
+    timestep_tensor = torch.tensor(timestep, device=latents.device)
+    with torch.no_grad():
+        return scheduler.step(noise_prediction, timestep_tensor, latents).prev_sample
+
+
 def add_noise(scheduler, latents, timestep, noise=None):
     """Add controlled noise at a selected diffusion timestep."""
     if noise is None:
