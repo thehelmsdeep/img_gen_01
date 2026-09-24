@@ -8,14 +8,21 @@ def main() -> None:
         description="Local text-to-image generation"
     )
     parser.add_argument("prompt", help="Text prompt for the image")
-    parser.add_argument(
-        "--output",
-        default="outputs/image.png",
-        help="Output PNG path",
-    )
+    parser.add_argument("--output", default="outputs/image.png")
+    parser.add_argument("--steps", type=int, default=30)
+    parser.add_argument("--width", type=int, default=512)
+    parser.add_argument("--height", type=int, default=512)
+    parser.add_argument("--seed", type=int, default=None)
     args = parser.parse_args()
 
-    path = generate(args.prompt, args.output)
+    path = generate(
+        prompt=args.prompt,
+        output_path=args.output,
+        steps=args.steps,
+        width=args.width,
+        height=args.height,
+        seed=args.seed,
+    )
     print(f"Image saved to: {path}")
 
 
