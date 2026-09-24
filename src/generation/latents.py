@@ -70,6 +70,8 @@ def denoise(
     latents,
     text_embeddings,
     num_inference_steps: int = 20,
+    negative_embeddings=None,
+    guidance_scale: float = 7.5,
 ):
     """Run a small manual latent denoising loop."""
     if num_inference_steps < 1:
@@ -79,11 +81,26 @@ def denoise(
 
     with torch.no_grad():
         for timestep in scheduler.timesteps:
-            noise_prediction = unet(
-                latents,
-                timestep,
-                encoder_hidden_states=text_embeddings,
-            ).sample
+            if negative_embeddings is not None:
+                noise_unconditional = unet(
+                    latents,
+                    timestep,
+                    encoder_hidden_states=negative_embeddings,
+                ).sample
+                noise_conditional = unet(
+                    latents,
+                    timestep,
+                    encoder_hidden_states=text_embeddings,
+                ).sample
+                noise_prediction = noise_unconditional + guidance_scale * (
+                    noise_conditional - noise_unconditional
+                )
+            else:
+                noise_prediction = unet(
+                    latents,
+                    timestep,
+                    encoder_hidden_states=text_embeddings,
+                ).sample
             latents = scheduler.step(
                 noise_prediction,
                 timestep,
