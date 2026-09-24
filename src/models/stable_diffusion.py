@@ -3,7 +3,7 @@ from pathlib import Path
 import torch
 from diffusers import StableDiffusionPipeline
 from src.generation.latents import create_latents, denoise, decode_latents
-from src.prompt import encode_prompt, encode_cfg_prompts
+from src.prompt import encode_cfg_prompts
 
 
 def choose_device() -> str:
@@ -53,15 +53,20 @@ def manual_generate(
     """Run a minimal educational text-to-image path using pipeline components."""
     negative_embeddings, embeddings = encode_cfg_prompts(pipe, prompt, negative_prompt)
 
-    height = 64
-    width = 64
+    height = 512
+    width = 512
+    latent_height = height // 8
+    latent_width = width // 8
     latents = create_latents(
-        height=height,
-        width=width,
+        channels=pipe.unet.config.in_channels,
+        height=latent_height,
+        width=latent_width,
         seed=seed,
         device=str(pipe.device),
         dtype=pipe.unet.dtype,
     )
+
+    latents = latents * pipe.scheduler.init_noise_sigma
 
     latents = denoise(
         pipe.scheduler,
