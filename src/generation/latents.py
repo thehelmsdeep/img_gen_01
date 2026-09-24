@@ -38,6 +38,17 @@ def create_latents(
     )
 
 
+def predict_noise(pipe, latents, timestep, text_embeddings):
+    """Use the pipeline UNet to predict noise for one timestep."""
+    timestep_tensor = torch.tensor([timestep], device=latents.device)
+    with torch.no_grad():
+        return pipe.unet(
+            latents,
+            timestep_tensor,
+            encoder_hidden_states=text_embeddings,
+        ).sample
+
+
 def add_noise(scheduler, latents, timestep, noise=None):
     """Add controlled noise at a selected diffusion timestep."""
     if noise is None:
