@@ -33,3 +33,25 @@ def encode_prompt(
         hidden_states=hidden_states,
         shape=tuple(hidden_states.shape),
     )
+
+
+def encode_cfg_prompts(
+    pipe: StableDiffusionPipeline,
+    prompt: str,
+    negative_prompt: str = "",
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Encode negative and positive prompts for classifier-free guidance."""
+    positive = encode_prompt(pipe, prompt).hidden_states
+    negative = encode_prompt(pipe, negative_prompt).hidden_states
+    return negative, positive
+
+
+def apply_cfg(
+    noise_unconditional: torch.Tensor,
+    noise_conditional: torch.Tensor,
+    guidance_scale: float = 7.5,
+) -> torch.Tensor:
+    """Combine unconditional and conditional noise predictions with CFG."""
+    return noise_unconditional + guidance_scale * (
+        noise_conditional - noise_unconditional
+    )
