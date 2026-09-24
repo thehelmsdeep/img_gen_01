@@ -6,13 +6,21 @@ class ModelInfo:
     name: str
     model_id: str
     description: str
+    pipeline: str
 
 
 MODELS = {
+    "flux": ModelInfo(
+        name="FLUX.1 schnell",
+        model_id="black-forest-labs/FLUX.1-schnell",
+        description="Local FLUX.1 text-to-image model optimized for few-step generation.",
+        pipeline="flux",
+    ),
     "sd15": ModelInfo(
         name="Stable Diffusion v1.5",
         model_id="stable-diffusion-v1-5/stable-diffusion-v1-5",
-        description="First local text-to-image model for the project.",
+        description="Stable Diffusion v1.5 text-to-image model.",
+        pipeline="stable_diffusion",
     ),
 }
 
