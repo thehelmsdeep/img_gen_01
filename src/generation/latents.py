@@ -63,3 +63,31 @@ def add_noise(scheduler, latents, timestep, noise=None):
         noise = torch.randn_like(latents)
     timestep_tensor = torch.tensor([timestep], device=latents.device)
     return scheduler.add_noise(latents, noise, timestep_tensor)
+
+def denoise(
+    scheduler,
+    unet,
+    latents,
+    text_embeddings,
+    num_inference_steps: int = 20,
+):
+    """Run a small manual latent denoising loop."""
+    if num_inference_steps < 1:
+        raise ValueError("num_inference_steps must be at least 1.")
+
+    scheduler.set_timesteps(num_inference_steps, device=latents.device)
+
+    with torch.no_grad():
+        for timestep in scheduler.timesteps:
+            noise_prediction = unet(
+                latents,
+                timestep,
+                encoder_hidden_states=text_embeddings,
+            ).sample
+            latents = scheduler.step(
+                noise_prediction,
+                timestep,
+                latents,
+            ).prev_sample
+
+    return latents
