@@ -91,3 +91,16 @@ def denoise(
             ).prev_sample
 
     return latents
+
+
+def decode_latents(pipe, latents):
+    """Decode final latents into an RGB image using the pipeline VAE."""
+    scaling_factor = pipe.vae.config.scaling_factor
+    latents = latents / scaling_factor
+
+    with torch.no_grad():
+        image = pipe.vae.decode(latents).sample
+
+    image = (image / 2 + 0.5).clamp(0, 1)
+    image = image.cpu().permute(0, 2, 3, 1).float().numpy()
+    return image
