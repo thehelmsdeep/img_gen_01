@@ -66,7 +66,7 @@ img_gen_01/
 ## Project stages
 
 ### Stage 1 — Local model execution
-Download a compatible model and run inference without a paid image-generation API.
+Download a compatible model and run inference without a paid image-generation API. The current default is FLUX.1 schnell; Stable Diffusion v1.5 remains available as an alternative.
 
 ### Stage 2 — Own pipeline
 Separate model loading, prompt processing, generation, decoding, and image output into our own modules.
@@ -79,6 +79,12 @@ Implement and study individual components of the generation process rather than 
 
 ### Stage 5 — Experiments
 Test smaller models, custom components, alternative samplers, conditioning methods, and eventually custom architectures.
+
+## Current default model
+
+The default model is `black-forest-labs/FLUX.1-schnell`. Diffusers documents this as the timestep-distilled FLUX variant, intended for few-step generation; its recommended usage uses `guidance_scale=0` and up to 256 prompt tokens. The model repository is gated, so access requires accepting its conditions on Hugging Face before the weights can be downloaded. citeturn0search0turn0search2
+
+Stable Diffusion v1.5 is still registered as `sd15` and can be selected with `--model sd15`.
 
 ## Important
 
