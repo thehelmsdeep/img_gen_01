@@ -1,18 +1,20 @@
 from pathlib import Path
 
+from src.config import MODEL_CACHE_DIR, OUTPUT_DIR
+from src.models.registry import get_model
 from src.models.stable_diffusion import load_pipeline
 
 
 def generate(
     prompt: str,
-    output_path: str = "outputs/image.png",
-    model_id: str | None = None,
+    output_path: str = str(OUTPUT_DIR / "image.png"),
+    model_name: str = "sd15",
     steps: int = 30,
     width: int = 512,
     height: int = 512,
     seed: int | None = None,
 ) -> Path:
-    """Generate one image locally with basic generation controls."""
+    """Generate one image locally using a registered model."""
     if not prompt.strip():
         raise ValueError("Prompt cannot be empty.")
     if steps < 1:
@@ -20,7 +22,8 @@ def generate(
     if width < 64 or height < 64:
         raise ValueError("width and height must be at least 64.")
 
-    pipe = load_pipeline(model_id=model_id) if model_id else load_pipeline()
+    model = get_model(model_name)
+    pipe = load_pipeline(model.model_id, cache_dir=str(MODEL_CACHE_DIR))
 
     generator = None
     if seed is not None:
