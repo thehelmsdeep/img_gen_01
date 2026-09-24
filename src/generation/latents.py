@@ -1,4 +1,15 @@
 import torch
+from diffusers import DDPMScheduler
+
+
+def create_scheduler() -> DDPMScheduler:
+    """Create the diffusion scheduler used to control denoising steps."""
+    return DDPMScheduler(
+        num_train_timesteps=1000,
+        beta_start=0.0001,
+        beta_end=0.02,
+        beta_schedule="linear",
+    )
 
 
 def create_latents(
@@ -25,3 +36,11 @@ def create_latents(
         device=device,
         dtype=dtype,
     )
+
+
+def add_noise(scheduler, latents, timestep, noise=None):
+    """Add controlled noise at a selected diffusion timestep."""
+    if noise is None:
+        noise = torch.randn_like(latents)
+    timestep_tensor = torch.tensor([timestep], device=latents.device)
+    return scheduler.add_noise(latents, noise, timestep_tensor)
