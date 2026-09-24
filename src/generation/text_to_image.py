@@ -3,7 +3,7 @@ from pathlib import Path
 from src.config import MODEL_CACHE_DIR, OUTPUT_DIR
 from src.models.registry import get_model
 from src.models.stable_diffusion import load_pipeline
-from src.prompt import prepare_prompt
+from src.prompt import prepare_prompt, tokenize_prompt
 
 
 def generate(
